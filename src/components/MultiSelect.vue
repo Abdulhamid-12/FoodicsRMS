@@ -1,17 +1,14 @@
 <template>
   <div class="select-field" @click="showDropdown = true" @blur="hideDropdown">
     <div class="selected-items">
-      <span v-for="item in modelValue" :key="item" class="selected-item">
+      <span v-for="item in value" :key="item" class="selected-item">
         {{ item }}
         <button @click.stop="removeItem(item)">x</button>
       </span>
     </div>
+    <button @click="showDropdown = !showDropdown">^</button>
     <ul v-if="showDropdown" class="dropdown">
-      <li
-        v-for="item in filteredItems"
-        :key="item"
-        @mousedown.prevent="selectItem(item)"
-      >
+      <li v-for="item in filteredItems" :key="item" @click="selectItem(item)">
         {{ item }}
       </li>
     </ul>
@@ -19,19 +16,18 @@
 </template>
 
 <script>
-
 export default {
-  name: 'MultiSelect',
+  name: "MultiSelect",
   props: {
     items: {
       type: Array,
       required: true,
-      default: () => ["hsd", "hgsfd", "hgf"]
+      default: () => ["hsd", "hgsfd", "hgf"],
     },
-    modelValue: {
+    value: {
       type: Array,
-      default: () => ["B01", "B02", "B03"]
-    }
+      default: () => ["B01", "B02", "B03"],
+    },
   },
   data() {
     return {
@@ -39,31 +35,40 @@ export default {
     };
   },
   computed: {
-      filteredItems() {
-        return this.items.filter(item => !this.modelValue.includes(item));
-      }
+    selectedItems() {
+      return this.value;
     },
+    filteredItems() {
+      return this.items.filter((item) => !this.value.includes(item));
+    },
+  },
   methods: {
     selectItem(item) {
-      if (!this.modelValue.includes(item)) {
-        this.modelValue = [...this.modelValue, item];
+      if (!this.value.includes(item)) {
+        // this.value = [...this.value, item];
+        this.$emit("input", [...this.selectedItems, item]);
       }
-      this.showDropdown = false;
     },
     removeItem(item) {
-      this.modelValue = this.modelValue.filter(i => i !== item);
+      //   this.value = this.value.filter(i => i !== item);
+      this.$emit(
+        "input",
+        this.selectedItems.filter((i) => i !== item)
+      );
     },
     hideDropdown() {
       setTimeout(() => {
         this.showDropdown = false;
       }, 200);
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .select-field {
+  display: flex;
+  justify-content: space-between;
   position: relative;
   width: 300px;
   padding: 10px;

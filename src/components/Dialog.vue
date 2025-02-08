@@ -1,5 +1,5 @@
 <template>
-    <div class="overlay" v-if="modelValue">
+    <div class="overlay" v-if="value">
       <!-- the dialog   -->
         <slot></slot>
     </div>
@@ -8,7 +8,7 @@
   <script>
   export default {
     props: {
-        modelValue: {
+        value: {
             type: Boolean,
             default: false
         }
