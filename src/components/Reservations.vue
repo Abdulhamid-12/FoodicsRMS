@@ -80,6 +80,7 @@ export default {
     console.log("mounted");
     try {
       const branches = await apiServices.getBranches();
+      console.log(branches);
     } catch (error) {
       console.error(error);
     }
