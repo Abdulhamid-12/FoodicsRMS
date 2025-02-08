@@ -37,12 +37,18 @@
         </section>
         <p class="mx-3 py-2">
           A button “Add Branches” will open a pop up allowing users to enable
-          reservations for branches that have <span style="color: blueviolet;">"accepts_reservations === false"</span> 
-          Saving this popup will update the branch with <span style="color: blueviolet;">"accepts_reservations =
-            true"</span>.
+          reservations for branches that have
+          <span style="color: blueviolet"
+            >"accepts_reservations === false"</span
+          >
+          Saving this popup will update the branch with
+          <span style="color: blueviolet">"accepts_reservations = true"</span>.
         </p>
         <section class="flex flex-col mx-3">
-          <MultiSelect v-model="selectedBranches" :items="['A01', 'A02', 'A03']"/>
+          <MultiSelect
+            v-model="selectedBranches"
+            :items="['A01', 'A02', 'A03']"
+          />
         </section>
         <section class="flex justify-end">
           <BaseButton class="my-2" @click="dialog = false">Close</BaseButton>

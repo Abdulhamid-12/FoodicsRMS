@@ -19,5 +19,19 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'https://api.foodics.dev/v5/',
+        changeOrigin: true,
+        rewrite: (path) => {
+          console.log(path);
+          return path.replace(/^\/api/, '')
+        },
+      },
+    },
+  },
 })
