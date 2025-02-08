@@ -1,15 +1,17 @@
 <template>
-  <div class="select-field" @click="showDropdown = true" @blur="hideDropdown">
-    <div class="selected-items">
-      <span v-for="item in value" :key="item" class="selected-item">
-        {{ item }}
-        <button @click.stop="removeItem(item)">x</button>
-      </span>
+  <div>
+    <div class="select-field" @click="showDropdown = true" @blur="hideDropdown">
+      <div class="selected-items">
+        <span v-for="item in value" class="selected-item">
+          {{ getItemTitle(item) }}
+          <button @click.stop="removeItem(item)">x</button>
+        </span>
+      </div>
+      <button @click="showDropdown = !showDropdown">^</button>
     </div>
-    <button @click="showDropdown = !showDropdown">^</button>
     <ul v-if="showDropdown" class="dropdown">
-      <li v-for="item in filteredItems" :key="item" @click="selectItem(item)">
-        {{ item }}
+      <li v-for="item in filteredItems" @click="selectItem(item)">
+        {{ getItemTitle(item) }}
       </li>
     </ul>
   </div>
@@ -22,11 +24,17 @@ export default {
     items: {
       type: Array,
       required: true,
-      default: () => ["hsd", "hgsfd", "hgf"],
     },
     value: {
       type: Array,
-      default: () => ["B01", "B02", "B03"],
+    },
+    itemText: {
+      type: String,
+      default: "name",
+    },
+    itemValue: {
+      type: String,
+      default: "value",
     },
   },
   data() {
@@ -44,17 +52,30 @@ export default {
   },
   methods: {
     selectItem(item) {
-      if (!this.value.includes(item)) {
-        // this.value = [...this.value, item];
+      const existingItem = this.selectedItems.find((i) => this.areItemsEqual(i, item));
+      if (!existingItem) {
         this.$emit("input", [...this.selectedItems, item]);
       }
+      // if (!this.value.includes(item)) {
+      //   this.$emit("input", [...this.selectedItems, item]);
+      // }
     },
     removeItem(item) {
-      //   this.value = this.value.filter(i => i !== item);
       this.$emit(
         "input",
         this.selectedItems.filter((i) => i !== item)
       );
+    },
+    getItemTitle(item) {
+      const bbb = this.itemText ? item[this.itemText] : item;
+      console.log(bbb);
+      return bbb;
+    },
+    areItemsEqual(item1, item2) {
+      if (typeof item1 === 'object' && typeof item2 === 'object') {
+        return JSON.stringify(item1) === JSON.stringify(item2);
+      }
+      return item1 === item2;
     },
     hideDropdown() {
       setTimeout(() => {
@@ -105,8 +126,8 @@ input {
 }
 
 .dropdown {
-  position: absolute;
-  width: 100%;
+  position: relative;
+  width: 300px;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 3px;

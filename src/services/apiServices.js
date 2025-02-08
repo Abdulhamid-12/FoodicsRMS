@@ -1,4 +1,4 @@
-import axios from '@/services/axiosConfig';
+import axios from '@/services/axiosInstance';
 
 const token = import.meta.env.VITE_API_TOKEN;
 

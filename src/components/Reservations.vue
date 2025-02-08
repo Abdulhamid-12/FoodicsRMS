@@ -47,7 +47,9 @@
         <section class="flex flex-col mx-3">
           <MultiSelect
             v-model="selectedBranches"
-            :items="['A01', 'A02', 'A03']"
+            :items="[{ title: 'Item 1', value: '1' }, { title: 'Item 2', value: '2' }]"
+            item-text="title"
+            item-value="value"
           />
         </section>
         <section class="flex justify-end">
@@ -68,7 +70,7 @@ export default {
   data() {
     return {
       dialog: false,
-      selectedBranches: ['b', 'c'],
+      selectedBranches: [{ title: 'ba 1', value: '1' }, { title: 'bay 2', value: '2' }],
     };
   },
   components: {
