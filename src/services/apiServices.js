@@ -2,11 +2,11 @@ import axios from '@/services/axiosInstance';
 
 const token = import.meta.env.VITE_API_TOKEN;
 
-const headers = new Headers({
+const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Authorization': 'Bearer ' + token
-});
+};
 
 const apiServices = {
     getBranches: () => {
@@ -14,7 +14,7 @@ const apiServices = {
     },
     updateAcceptReservation: (id, value) => {
         const raw = { 'accepts_reservations': value };
-        return axios.put(`branches/${id}`, raw, {headers: headers});
+        return axios.put(`branches/${id}`, raw, { headers: headers });
     }
 };
 

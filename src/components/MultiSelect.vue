@@ -74,10 +74,8 @@ export default {
       // }
     },
     removeItem(item) {
-      this.$emit(
-        "input",
-        this.selectedItems.filter((i) => i !== item)
-      );
+      this.$emit("remove", item);
+      this.$emit("input", this.selectedItems.filter((i) => i !== item));
     },
     getItemTitle(item) {
       // const bbb = this.itemText ? item[this.itemText] : item;

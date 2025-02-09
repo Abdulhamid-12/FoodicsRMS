@@ -1,9 +1,9 @@
 <template>
   <button
-    :class="['base-button', buttonColor, { 'base-button--disabled': disabled }]"
-    :style="{ cursor: loading ? 'not-allowed' : 'pointer' }"
-    @click="$emit('click')"
-    :disabled="disabled"
+    :class="['base-button', buttonColor, { 'base-button--disabled': disabled || loading }]"
+    :style="{ cursor: loading || disabled ? 'not-allowed' : 'pointer' }"
+    @click="handleClick"
+    :disabled="disabled || loading"
   >
     <template v-if="!loading">
       <slot></slot>
@@ -41,6 +41,13 @@ export default {
       return `base-button--${this.color}`;
     },
   },
+  methods: {
+    handleClick(event) {
+      if (!this.loading && !this.disabled) {
+        this.$emit('click', event);
+      }
+    }
+  }
 };
 </script>
 

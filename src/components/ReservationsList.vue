@@ -1,11 +1,15 @@
 <template>
-  <div style="background-color: #f8f9fa">
+  <div>
     <div
       class="flex items-center justify-between py-4"
       style="background-color: var(--secondary-color)"
     >
       <h1 class="mx-3 text-4xl"><b>Reservations</b></h1>
-      <BaseButton class="my-2 mx-3" :color="'primary'"
+      <BaseButton
+        class="my-2 mx-3"
+        :color="'primary'"
+        @click="onDisableReservations"
+        :loading="loadingDisableBtn"
         >Disable Reservations</BaseButton
       >
     </div>
@@ -17,6 +21,7 @@
             @click="onAddBranches"
             class="my-2 mx-3"
             :color="'secondary'"
+            :disabled="loadingTable"
             >Add Branches</BaseButton
           >
         </tr>
@@ -39,8 +44,12 @@
         </tr>
       </table>
     </div>
-    <BaseDialog v-model="dialog" title="Add Branches" :loading="loading">
-      <AddBranches :branches="addBranchesItems" @close="dialog = false"/>
+    <BaseDialog v-model="dialog" title="Add Branches">
+      <AddBranches
+        :branches="addBranchesItems"
+        @close="dialog = false"
+        @update-table="onTableUpdate"
+      />
     </BaseDialog>
   </div>
 </template>
@@ -56,7 +65,7 @@ export default {
     return {
       dialog: false,
       loadingTable: false,
-      loading: false,
+      loadingDisableBtn: false,
       branches: [],
       addBranchesItems: [],
     };
@@ -80,6 +89,32 @@ export default {
     },
   },
   methods: {
+    onDisableReservations: async function () {
+      this.loadingTable = true;
+      this.loadingDisableBtn = true;
+
+      try {
+        await Promise.allSettled(
+          this.acceptReservationsBranches.map((branch) =>
+            apiServices.updateAcceptReservation(branch.id, false)
+          )
+        );
+
+        this.branches = this.branches.map(branch => {
+          if(branch.accepts_reservations){
+            branch.accepts_reservations = false;
+          }
+
+          return branch;
+        });
+
+      } catch (error) {
+        console.error("error disabling reservations:", error);
+      } finally {
+        this.loadingTable = false;
+        this.loadingDisableBtn = false;
+      }
+    },
     onAddBranches: async function () {
       this.dialog = true;
     },
@@ -93,6 +128,17 @@ export default {
       console.log("Row clicked:", branch);
       // Add your logic here
     },
+    onTableUpdate(newTable) {
+      this.branches = this.branches.map((branch) => {
+        const activeBranch = newTable.find((item) => item.id === branch.id);
+        if (activeBranch) {
+          branch.accepts_reservations = true;
+        } else {
+          branch.accepts_reservations = false;
+        }
+        return branch;
+      });
+    },
   },
   mounted: async function () {
     try {
@@ -104,9 +150,8 @@ export default {
       this.addBranchesItems = response.data.map((branch) => ({
         name: `${branch.name} (${branch.reference})`,
         id: branch.id,
-        accepts_reservations: branch.accepts_reservations
+        accepts_reservations: branch.accepts_reservations,
       }));
-
     } catch (error) {
       console.error(error);
     } finally {
