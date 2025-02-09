@@ -104,7 +104,7 @@ export default {
   display: flex;
   justify-content: space-between;
   position: relative;
-  width: 300px;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -140,7 +140,7 @@ input {
 
 .dropdown {
   position: relative;
-  width: 300px;
+  width: 100%;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 3px;

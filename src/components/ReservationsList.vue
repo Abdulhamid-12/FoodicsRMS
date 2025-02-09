@@ -1,14 +1,17 @@
 <template>
-  <div style="background-color: #f8f9fa;">
-    <div class="flex items-center justify-between py-4" style="background-color: var(--secondary-color);">
-      <h1 class="mx-3 text-4xl">Reservations</h1>
+  <div style="background-color: #f8f9fa">
+    <div
+      class="flex items-center justify-between py-4"
+      style="background-color: var(--secondary-color)"
+    >
+      <h1 class="mx-3 text-4xl"><b>Reservations</b></h1>
       <BaseButton class="my-2 mx-3" :color="'primary'"
         >Disable Reservations</BaseButton
       >
     </div>
     <div class="w-full flex flex-col items-center my-20">
       <span class="w-5/6"><ProgressLinear v-model="loadingTable" /></span>
-      <table class="w-5/6 bg-white rounded-lg mb-20 overflow-hidden">
+      <table class="w-5/6 bg-white rounded-lg mb-20 overflow-hidden shadow-lg">
         <tr>
           <BaseButton
             @click="onAddBranches"
@@ -23,7 +26,12 @@
           <th>Number of Tables</th>
           <th>Reservation Duration</th>
         </tr>
-        <tr v-for="branch in acceptReservationsBranches" :key="branch.id">
+        <tr
+          v-for="branch in acceptReservationsBranches"
+          :key="branch.id"
+          class="clickable-row"
+          @click="onRowClick(branch)"
+        >
           <td>{{ branch.name }}</td>
           <td>{{ branch.reference }}</td>
           <td>{{ getTablesCount(branch) }}</td>
@@ -32,33 +40,15 @@
       </table>
     </div>
     <BaseDialog v-model="dialog" title="Add Branches" :loading="loading">
-      <p class="mx-3 py-2">
-        A button “Add Branches” will open a pop up allowing users to enable
-        reservations for branches that have
-        <span style="color: blueviolet">"accepts_reservations === false"</span>
-        Saving this popup will update the branch with
-        <span style="color: blueviolet">"accepts_reservations = true"</span>.
-      </p>
-      <section class="flex flex-col mx-3">
-        <MultiSelect
-          v-model="acceptReservationsBranches"
-          :items="rejectReservationsBranches"
-          item-text="name"
-          item-value="id"
-        />
-      </section>
-      <section class="flex justify-end">
-        <BaseButton class="my-2" @click="dialog = false">Close</BaseButton>
-        <BaseButton class="my-2 mx-3" :color="'primary'">Save</BaseButton>
-      </section>
+      <AddBranches :branches="addBranchesItems" @close="dialog = false"/>
     </BaseDialog>
   </div>
 </template>
 <script>
 import BaseDialog from "@/components/BaseDialog.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import MultiSelect from "@/components/MultiSelect.vue";
 import ProgressLinear from "@/components/ProgressLinear.vue";
+import AddBranches from "@/components/AddBranches.vue";
 import apiServices from "@/services/apiServices";
 
 export default {
@@ -68,13 +58,14 @@ export default {
       loadingTable: false,
       loading: false,
       branches: [],
+      addBranchesItems: [],
     };
   },
   components: {
     BaseDialog,
     BaseButton,
-    MultiSelect,
     ProgressLinear,
+    AddBranches,
   },
   computed: {
     acceptReservationsBranches() {
@@ -92,21 +83,36 @@ export default {
     onAddBranches: async function () {
       this.dialog = true;
     },
-    getTablesCount: function (branch) {
-      return branch.sections.reduce((total, sec) => total + sec.tables.length, 0);
+    getTablesCount(branch) {
+      return branch.sections.reduce(
+        (total, sec) => total + sec.tables.length,
+        0
+      );
+    },
+    onRowClick(branch) {
+      console.log("Row clicked:", branch);
+      // Add your logic here
     },
   },
   mounted: async function () {
-      try {
-        this.loadingTable = true;
-        const response = await apiServices.getBranches();
-        this.branches = [...response.data];
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.loadingTable = false;
-      }
-    },
+    try {
+      this.loadingTable = true;
+      const response = await apiServices.getBranches();
+
+      this.branches = [...response.data];
+
+      this.addBranchesItems = response.data.map((branch) => ({
+        name: `${branch.name} (${branch.reference})`,
+        id: branch.id,
+        accepts_reservations: branch.accepts_reservations
+      }));
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingTable = false;
+    }
+  },
 };
 </script>
 <style scoped>
@@ -114,8 +120,9 @@ export default {
   @apply text-white py-1 px-4 rounded;
 }
 
-th, td {
-  padding: .5rem 1rem;
+th,
+td {
+  padding: 0.5rem 1rem;
 }
 th {
   text-align: left;
@@ -129,7 +136,16 @@ tr:last-child {
   border-bottom: none;
 }
 
-tr:nth-child(even){
+tr:nth-child(even) {
   background-color: var(--secondary-color);
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.clickable-row:hover {
+  background-color: #e2e2e2;
 }
 </style>

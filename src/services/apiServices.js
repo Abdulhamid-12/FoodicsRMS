@@ -11,6 +11,10 @@ const headers = new Headers({
 const apiServices = {
     getBranches: () => {
         return axios.get('branches?include[0]=sections&include[1]=sections.tables', { headers: headers });
+    },
+    updateAcceptReservation: (id, value) => {
+        const raw = { 'accepts_reservations': value };
+        return axios.put(`branches/${id}`, raw, {headers: headers});
     }
 };
 

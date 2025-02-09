@@ -1,8 +1,21 @@
 <template>
   <BaseOverlay v-model="value">
-    <div class="dialog">
-      <section class="flex justify-between py-2 rounded-t-lg" style="background-color: var(--secondary-color);">
-        <h1 class="mx-3">{{ title }}</h1>
+    <div
+      class="dialog"
+      :style="{
+        width: dialogWidth,
+        height: dialogHeight,
+        minWidth: dialogMinWidth,
+        minHeight: dialogMinHeight,
+      }"
+    >
+      <section
+        class="flex justify-between py-2 rounded-t-lg"
+        style="background-color: var(--secondary-color)"
+      >
+        <h1 class="mx-3">
+          <b>{{ title }}</b>
+        </h1>
       </section>
       <slot></slot>
       <ProgressLinear v-model="loading" />
@@ -27,6 +40,36 @@ export default {
     loading: {
       type: Boolean,
       default: false,
+    },
+    width: {
+      type: String,
+      default: "auto",
+    },
+    height: {
+      type: String,
+      default: "auto",
+    },
+    minWidth: {
+      type: String,
+      default: "auto",
+    },
+    minHeight: {
+      type: String,
+      default: "auto",
+    },
+  },
+  computed: {
+    dialogWidth() {
+      return this.width;
+    },
+    dialogHeight() {
+      return this.height;
+    },
+    dialogMinWidth() {
+      return this.minWidth;
+    },
+    dialogMinHeight() {
+      return this.minHeight;
     },
   },
   components: {

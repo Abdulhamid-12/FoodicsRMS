@@ -7,11 +7,6 @@
 <script>
 export default {
   name: 'ProgressLinear',
-  data() {
-    return {
-      inActiveColor: '#3b82f680'
-    };
-  },
   props: {
     color: {
       type: String,
@@ -25,7 +20,7 @@ export default {
   computed: {
     getColor() {
       return {
-        backgroundColor: this.value ? this.color : this.inActiveColor
+        backgroundColor: this.value ? this.color : ''
       };
     }
   }
@@ -39,7 +34,6 @@ export default {
   margin: 0 auto;
   height: 3px;
   overflow: hidden;
-  background-color: #e0e0e0;
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
 }

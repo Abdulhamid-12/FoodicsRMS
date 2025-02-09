@@ -47,6 +47,7 @@ export default {
 <style scoped>
 .base-button {
   @apply py-1 px-4 rounded border;
+  transition: filter 0.3s;
 }
 
 .base-button--default {
@@ -68,5 +69,9 @@ export default {
   background-color: #e0e0e0;
   color: #a0a0a0;
   cursor: not-allowed;
+}
+
+.base-button:hover:not(.base-button--disabled) {
+  filter: invert(1);
 }
 </style>
