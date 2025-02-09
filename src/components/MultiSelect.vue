@@ -80,9 +80,9 @@ export default {
       );
     },
     getItemTitle(item) {
-      const bbb = this.itemText ? item[this.itemText] : item;
-      console.log(bbb);
-      return bbb;
+      // const bbb = this.itemText ? item[this.itemText] : item;
+      // console.log(bbb);
+      return this.itemText ? item[this.itemText] : item;
     },
     areItemsEqual(item1, item2) {
       if (typeof item1 === "object" && typeof item2 === "object") {

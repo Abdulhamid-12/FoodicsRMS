@@ -1,6 +1,6 @@
 <template>
-  <div :class="['progress-linear', color]">
-    <div :class="['progress-linear-bar', { 'is-moving': value }]" :style="barStyle"></div>
+  <div class="progress-linear">
+    <div :class="['progress-linear-bar', { 'is-moving': value }]" :style="getColor"></div>
   </div>
 </template>
 
@@ -15,7 +15,7 @@ export default {
   props: {
     color: {
       type: String,
-      default: '#5f27cd'
+      default: 'var(--primary-color)'
     },
     value: {
       type: Boolean,
@@ -23,7 +23,7 @@ export default {
     }
   },
   computed: {
-    barStyle() {
+    getColor() {
       return {
         backgroundColor: this.value ? this.color : this.inActiveColor
       };

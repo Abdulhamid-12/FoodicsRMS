@@ -1,24 +1,47 @@
 <template>
-  <button :class="['base-button', buttonColor]" @click="$emit('click')">
-    <slot></slot>
+  <button
+    :class="['base-button', buttonColor, { 'base-button--disabled': disabled }]"
+    :style="{ cursor: loading ? 'not-allowed' : 'pointer' }"
+    @click="$emit('click')"
+    :disabled="disabled"
+  >
+    <template v-if="!loading">
+      <slot></slot>
+    </template>
+    <template v-else>
+      <Icon icon="line-md:loading-loop" width="25" />
+    </template>
   </button>
 </template>
 
 <script>
+import { Icon } from "@iconify/vue2";
+
 export default {
-  name: 'BaseButton',
+  name: "BaseButton",
   props: {
     color: {
       type: String,
-      default: 'default'
+      default: "default",
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  components: {
+    Icon,
   },
   computed: {
     buttonColor() {
       return `base-button--${this.color}`;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -32,12 +55,18 @@ export default {
 }
 
 .base-button--primary {
-  background-color: #5f27cd;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .base-button--secondary {
   background-color: gray;
   color: white;
+}
+
+.base-button--disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
 }
 </style>

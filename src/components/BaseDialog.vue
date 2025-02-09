@@ -1,7 +1,7 @@
 <template>
   <BaseOverlay v-model="value">
     <div class="dialog">
-      <section class="flex justify-between bg-blue-100 py-2 rounded-t-lg">
+      <section class="flex justify-between py-2 rounded-t-lg" style="background-color: var(--secondary-color);">
         <h1 class="mx-3">{{ title }}</h1>
       </section>
       <slot></slot>
