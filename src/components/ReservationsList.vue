@@ -10,7 +10,7 @@
       <table class="w-full m-10 bg-white rounded-lg">
         <tr>
           <BaseButton
-            @click="dialog = true"
+            @click="onAddBranches"
             class="my-2 mx-3"
             :color="'secondary'"
             >Add Branches</BaseButton
@@ -30,11 +30,7 @@
         </tr>
       </table>
     </div>
-    <Dialog v-model="dialog">
-      <div class="flex flex-col bg-white max-w-4xl rounded-lg">
-        <section class="flex justify-between bg-blue-100 py-2 rounded-t-lg">
-          <h1 class="mx-3">Add Branches</h1>
-        </section>
+    <BaseDialog v-model="dialog" title="Add Branches" :loading="loading">
         <p class="mx-3 py-2">
           A button “Add Branches” will open a pop up allowing users to enable
           reservations for branches that have
@@ -47,7 +43,10 @@
         <section class="flex flex-col mx-3">
           <MultiSelect
             v-model="selectedBranches"
-            :items="[{ title: 'Item 1', value: '1' }, { title: 'Item 2', value: '2' }]"
+            :items="[
+              { title: 'Item 1', value: '1' },
+              { title: 'Item 2', value: '2' },
+            ]"
             item-text="title"
             item-value="value"
           />
@@ -56,12 +55,11 @@
           <BaseButton class="my-2" @click="dialog = false">Close</BaseButton>
           <BaseButton class="my-2 mx-3" :color="'primary'">Save</BaseButton>
         </section>
-      </div>
-    </Dialog>
+    </BaseDialog>
   </div>
 </template>
 <script>
-import Dialog from "@/components/Dialog.vue";
+import BaseDialog from "@/components/BaseDialog.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import MultiSelect from "@/components/MultiSelect.vue";
 import apiServices from "@/services/apiServices";
@@ -70,22 +68,39 @@ export default {
   data() {
     return {
       dialog: false,
-      selectedBranches: [{ title: 'ba 1', value: '1' }, { title: 'bay 2', value: '2' }],
+      loading: false,
+      selectedBranches: [
+        { title: "ba 1", value: "1" },
+        { title: "bay 2", value: "2" },
+      ],
     };
   },
   components: {
-    Dialog,
+    BaseDialog,
     BaseButton,
     MultiSelect,
   },
+  methods: {
+    onAddBranches: async function () {
+      this.dialog = true;
+      try {
+        this.loading = true;
+        const branches2 = await apiServices.getBranches();
+        const branches = [
+          { title: "Branch 1", value: "1" },
+          { title: "Branch 2", value: "2" },
+        ];
+        console.log(branches);
+      } catch (error) {
+        console.error(error);
+      }
+      finally {
+        this.loading = false;
+      }
+    },
+  },
   mounted: async function () {
     console.log("mounted");
-    try {
-      const branches = await apiServices.getBranches();
-      console.log(branches);
-    } catch (error) {
-      console.error(error);
-    }
   },
 };
 </script>

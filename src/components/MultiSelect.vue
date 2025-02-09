@@ -3,11 +3,17 @@
     <div class="select-field" @click="showDropdown = true" @blur="hideDropdown">
       <div class="selected-items">
         <span v-for="item in value" class="selected-item">
-          {{ getItemTitle(item) }}
-          <button @click.stop="removeItem(item)">x</button>
+          <div class="flex items-center">
+            <h1>
+              {{ getItemTitle(item) }}
+            </h1>
+            <button @click.stop="removeItem(item)"><Icon icon="lets-icons:close-round-duotone" width="20" /></button>
+          </div>
         </span>
       </div>
-      <button @click="showDropdown = !showDropdown">^</button>
+      <button @click.stop="showDropdown = !showDropdown">
+        <Icon icon="mdi:menu-down" width="25" :rotate="showDropdown ? 90 : 0" />
+      </button>
     </div>
     <ul v-if="showDropdown" class="dropdown">
       <li v-for="item in filteredItems" @click="selectItem(item)">
@@ -18,6 +24,8 @@
 </template>
 
 <script>
+import { Icon } from "@iconify/vue2";
+
 export default {
   name: "MultiSelect",
   props: {
@@ -50,9 +58,14 @@ export default {
       return this.items.filter((item) => !this.value.includes(item));
     },
   },
+  components: {
+    Icon,
+  },
   methods: {
     selectItem(item) {
-      const existingItem = this.selectedItems.find((i) => this.areItemsEqual(i, item));
+      const existingItem = this.selectedItems.find((i) =>
+        this.areItemsEqual(i, item)
+      );
       if (!existingItem) {
         this.$emit("input", [...this.selectedItems, item]);
       }
@@ -72,7 +85,7 @@ export default {
       return bbb;
     },
     areItemsEqual(item1, item2) {
-      if (typeof item1 === 'object' && typeof item2 === 'object') {
+      if (typeof item1 === "object" && typeof item2 === "object") {
         return JSON.stringify(item1) === JSON.stringify(item2);
       }
       return item1 === item2;
