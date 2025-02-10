@@ -18,6 +18,7 @@
 import MultiSelect from "@/components/MultiSelect.vue";
 import ActionButtons from "@/components/ActionButtons.vue";
 import apiServices from "@/services/apiServices";
+import { alertService } from "@/services/alertServices";
 
 export default {
   data() {
@@ -26,7 +27,8 @@ export default {
       selectedItems: [],
       remainingItems: [],
       initialActiveItems: [],
-      initialInctiveItems: [],
+      initialInactiveItems: [],
+      snackbar: alertService,
     };
   },
   props: {
@@ -48,7 +50,7 @@ export default {
       (branch) => branch.accepts_reservations === false
     );
     this.remainingItems = [...other];
-    this.initialInctiveItems = [...other];
+    this.initialInactiveItems = [...other];
   },
   methods: {
     onClose() {
@@ -60,7 +62,7 @@ export default {
     async onSave() {
       this.loading = true;
       // get new added branches (previously inactive)
-      const inactiveBranches = this.initialInctiveItems.filter((branch) =>
+      const inactiveBranches = this.initialInactiveItems.filter((branch) =>
         this.selectedItems.includes(branch)
       );
 
@@ -85,8 +87,11 @@ export default {
           this.onClose();
         }, 200);
 
+        this.snackbar.success("Branches updated");
+
       } catch (error) {
         console.error("Error adding branches:", error);
+        this.snackbar.error("Error adding branches");
       } finally {
         this.loading = false;
       }

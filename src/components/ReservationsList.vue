@@ -47,6 +47,7 @@ import ReservationsListAdd from "@/components/ReservationsListAdd.vue";
 import ReservationsListEdit from "@/components/ReservationsListEdit.vue";
 import ReservationsListTable from "@/components/ReservationsListTable.vue";
 import apiServices from "@/services/apiServices";
+import { alertService } from "@/services/alertServices";
 
 export default {
   data() {
@@ -58,6 +59,7 @@ export default {
       branches: [],
       addBranchesItems: [],
       selectedBranch: null,
+      snackbar: alertService,
     };
   },
   components: {
@@ -98,8 +100,11 @@ export default {
 
           return branch;
         });
+
+        this.snackbar.success("Reservations disabled");
       } catch (error) {
         console.error("error disabling reservations:", error);
+        this.snackbar.error("Error disabling reservations");
       } finally {
         this.loadingTable = false;
         this.loadingDisableBtn = false;
@@ -145,8 +150,10 @@ export default {
         id: branch.id,
         accepts_reservations: branch.accepts_reservations,
       }));
-    } catch (error) {
+      this.snackbar.success("Branches loaded");
+    } catch (error){
       console.error(error);
+      this.snackbar.error("Error loading branches");
     } finally {
       this.loadingTable = false;
     }

@@ -2,6 +2,10 @@
 :root {
   --primary-color: #5f27cd;
   --secondary-color: #f3eeff;
+  --success-color: #42b883;
+  --error-color: #ff4949;
+  --info-color: #2196f3;
+  --warning-color: #fcb900;
 }
 
 /* @media (prefers-color-scheme: dark) {

@@ -95,12 +95,13 @@ import CustomTimeInput from "@/components/CustomTimeInput.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import { Icon } from "@iconify/vue2";
 import apiServices from "@/services/apiServices";
+import { alertService } from "@/services/alertServices";
 
 export default {
   data() {
     return {
       loading: false,
-      reservationDuration: this.value.reservation_duration,
+      reservationDuration: this.value.reservation_duration?? 0,
       reservationTimes: this.reorderDays(this.value.reservation_times),
       selectedTables: [],
       remainingTables: [],
@@ -117,6 +118,7 @@ export default {
       },
       startTime: "00:00",
       endTime: "00:00",
+      snackbar: alertService,
     };
   },
   props: {
@@ -178,7 +180,7 @@ export default {
         alert("Please select Reservation Duration");
         return;
       }
-      
+
       this.loading = true;
 
       // get new added tables (previously inactive)
@@ -213,8 +215,11 @@ export default {
           this.onClose();
         }, 200);
 
+        this.snackbar.success("Branch settings are updated");
+
       } catch (error) {
         console.error("Error editing a branch:", error);
+        this.snackbar.error("Error editing a branch");
       } finally {
         this.loading = false;
       }
@@ -234,6 +239,9 @@ export default {
         if (reservationTimes[day]) {
           reordered[day] = reservationTimes[day];
         }
+        else {
+          reordered[day] = [];
+        }
       });
       return reordered;
     },
@@ -249,14 +257,18 @@ export default {
     const filtered = this.tables.filter(
       (table) => table.accepts_reservations === true
     );
-    this.selectedTables = [...filtered];
-    this.initialSelectedTables = [...filtered];
+    if(filtered.length > 0) {
+      this.selectedTables = [...filtered];
+      this.initialSelectedTables = [...filtered];
+    }
 
     const other = this.tables.filter(
       (table) => table.accepts_reservations === false
     );
-    this.remainingTables = [...other];
-    this.initialRemainingTables = [...other];
+    if(other.length > 0) {
+      this.remainingTables = [...other]
+      this.initialRemainingTables = [...other];
+    };
   },
 };
 </script>
