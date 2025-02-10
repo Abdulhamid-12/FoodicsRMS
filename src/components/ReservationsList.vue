@@ -13,18 +13,25 @@
         >Disable Reservations</BaseButton
       >
     </div>
+    <BaseDialog v-model="addDialog" title="Add Branches">
+      <ReservationsListAdd
+        :branches="addBranchesItems"
+        @close="addDialog = false"
+        @update-table="onSaveAddBranches"
+      />
+    </BaseDialog>
     <ReservationsListTable
       :loadingTable="loadingTable"
       :acceptReservationsBranches="acceptReservationsBranches"
-      :onAddBranches="onAddBranches"
+      :onAddBranchesClick="onAddBranchesClick"
       :onRowClick="onRowClick"
       :getTablesCount="getTablesCount"
     />
-    <BaseDialog v-model="dialog" title="Add Branches">
-      <AddBranches
-        :branches="addBranchesItems"
-        @close="dialog = false"
-        @update-table="onTableUpdate"
+    <BaseDialog v-model="editDialog" :title="`Edit ${selectedBranch?.name} (Branch reservations settings)`">
+      <ReservationsListEdit
+        v-model="selectedBranch"
+        @close="editDialog = false"
+        @update-table=""
       />
     </BaseDialog>
   </div>
@@ -33,24 +40,28 @@
 <script>
 import BaseDialog from "@/components/BaseDialog.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import AddBranches from "@/components/ReservationsListAdd.vue";
+import ReservationsListAdd from "@/components/ReservationsListAdd.vue";
+import ReservationsListEdit from "@/components/ReservationsListEdit.vue";
 import ReservationsListTable from "@/components/ReservationsListTable.vue";
 import apiServices from "@/services/apiServices";
 
 export default {
   data() {
     return {
-      dialog: false,
+      addDialog: false,
+      editDialog: false,
       loadingTable: false,
       loadingDisableBtn: false,
       branches: [],
       addBranchesItems: [],
+      selectedBranch: null,
     };
   },
   components: {
     BaseDialog,
     BaseButton,
-    AddBranches,
+    ReservationsListAdd,
+    ReservationsListEdit,
     ReservationsListTable
   },
   computed: {
@@ -73,7 +84,7 @@ export default {
       try {
         await Promise.allSettled(
           this.acceptReservationsBranches.map((branch) =>
-            apiServices.updateAcceptReservation(branch.id, false)
+            apiServices.updateAcceptReservation(branch.id, { 'accepts_reservations': false })
           )
         );
 
@@ -92,8 +103,8 @@ export default {
         this.loadingDisableBtn = false;
       }
     },
-    onAddBranches: async function () {
-      this.dialog = true;
+    onAddBranchesClick: async function () {
+      this.addDialog = true;
     },
     getTablesCount(branch) {
       return branch.sections.reduce(
@@ -103,18 +114,22 @@ export default {
     },
     onRowClick(branch) {
       console.log("Row clicked:", branch);
-      // Add your logic here
+      this.selectedBranch = branch;
+      this.editDialog = true;
     },
-    onTableUpdate(newTable) {
+
+    onSaveAddBranches(newTable) {
       this.branches = this.branches.map((branch) => {
         const activeBranch = newTable.find((item) => item.id === branch.id);
-        if (activeBranch) {
-          branch.accepts_reservations = true;
-        } else {
-          branch.accepts_reservations = false;
-        }
+        branch.accepts_reservations = !!activeBranch;
         return branch;
       });
+
+      this.addBranchesItems = this.branches.map((branch) => ({
+        name: `${branch.name} (${branch.reference})`,
+        id: branch.id,
+        accepts_reservations: branch.accepts_reservations,
+      }));
     },
   },
   mounted: async function () {
@@ -129,6 +144,7 @@ export default {
         id: branch.id,
         accepts_reservations: branch.accepts_reservations,
       }));
+
     } catch (error) {
       console.error(error);
     } finally {

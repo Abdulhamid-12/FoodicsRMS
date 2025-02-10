@@ -51,7 +51,7 @@ export default {
     },
     minWidth: {
       type: String,
-      default: "auto",
+      default: "min(100vw, 800px)",
     },
     minHeight: {
       type: String,

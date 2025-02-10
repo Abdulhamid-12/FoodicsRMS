@@ -4,10 +4,11 @@
     <table class="w-5/6 bg-white rounded-lg mb-20 overflow-hidden shadow-lg">
       <tr>
         <BaseButton
-          @click="onAddBranches"
+          @click="onAddBranchesClick"
           class="my-2 mx-3"
           :color="'secondary'"
           :disabled="loadingTable"
+          :prepend-icon="'gridicons:add-outline'"
           >Add Branches</BaseButton
         >
       </tr>
@@ -40,7 +41,7 @@ export default {
   props: {
     loadingTable: Boolean,
     acceptReservationsBranches: Array,
-    onAddBranches: Function,
+    onAddBranchesClick: Function,
     onRowClick: Function,
     getTablesCount: Function
   },

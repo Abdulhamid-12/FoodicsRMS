@@ -6,7 +6,10 @@
     :disabled="disabled || loading"
   >
     <template v-if="!loading">
-      <slot></slot>
+      <div class="flex items-center">
+        <Icon v-if="prependIcon" :icon="prependIcon" width="20" style="display: inline; margin-right: 5px"/>
+        <slot></slot>
+      </div>
     </template>
     <template v-else>
       <Icon icon="line-md:loading-loop" width="25" />
@@ -32,6 +35,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    prependIcon: {
+      type: String,
+      default: "",
+    }
   },
   components: {
     Icon,

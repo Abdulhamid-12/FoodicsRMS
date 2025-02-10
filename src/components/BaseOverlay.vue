@@ -1,7 +1,9 @@
 <template>
-  <div class="overlay" v-if="value">
-    <slot></slot>
-  </div>
+  <transition name="fade">
+    <div class="overlay" v-if="value">
+      <slot></slot>
+    </div>
+  </transition>
 </template>
 
 <script>

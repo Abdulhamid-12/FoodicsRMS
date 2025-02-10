@@ -1,38 +1,22 @@
 <template>
   <span>
-    <p class="mx-3 py-2">
-      A button “Add Branches” will open a pop up allowing users to enable
-      reservations for branches that have
-      <span style="color: blueviolet">"accepts_reservations === false"</span>
-      Saving this popup will update the branch with
-      <span style="color: blueviolet">"accepts_reservations = true"</span>.
-    </p>
     <section class="flex flex-col mx-3">
       <MultiSelect
         v-model="selectedItems"
         :items="remainingItems"
         item-text="name"
         item-value="id"
+        label="Branches"
         @remove="addToItems"
       />
     </section>
-    <section class="flex justify-end">
-      <BaseButton class="my-2" @click="onClose()" :disabled="loading"
-        >Close</BaseButton
-      >
-      <BaseButton
-        class="my-2 mx-3"
-        :color="'primary'"
-        @click="onSave()"
-        :loading="loading"
-        >Save</BaseButton
-      >
-    </section>
+    <ActionButtons :loading="loading" @close="onClose" @save="onSave" />
   </span>
 </template>
+
 <script>
 import MultiSelect from "@/components/MultiSelect.vue";
-import BaseButton from "@/components/BaseButton.vue";
+import ActionButtons from "@/components/ActionButtons.vue";
 import apiServices from "@/services/apiServices";
 
 export default {
@@ -50,8 +34,8 @@ export default {
     default: [],
   },
   components: {
-    BaseButton,
     MultiSelect,
+    ActionButtons
   },
   mounted() {
     const filtered = this.branches.filter(
@@ -74,7 +58,6 @@ export default {
       this.remainingItems.push(item);
     },
     async onSave() {
-
       this.loading = true;
       // get new added branches (previously inactive)
       const inactiveBranches = this.initialInctiveItems.filter(
@@ -86,20 +69,18 @@ export default {
         (branch) => !this.selectedItems.includes(branch)
       );
 
-      // console.log("previously inactive:", inactiveBranches);
-      // console.log("previously active:", activeBranches);
-
       try {
         await Promise.allSettled([
           ...inactiveBranches.map((branch) =>
-            apiServices.updateAcceptReservation(branch.id, true)
+            apiServices.updateAcceptReservation(branch.id, { 'accepts_reservations': true })
           ),
           ...activeBranches.map((branch) =>
-            apiServices.updateAcceptReservation(branch.id, false)
+            apiServices.updateAcceptReservation(branch.id, { 'accepts_reservations': false })
           ),
         ]);
 
         this.$emit("update-table", this.selectedItems);
+        this.onClose();
 
       } catch (error) {
         console.error("Error adding branches:", error);
