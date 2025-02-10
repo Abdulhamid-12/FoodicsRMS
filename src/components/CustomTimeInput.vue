@@ -1,9 +1,10 @@
 <template>
-    <div class="time-input">
+    <span class="time-input">
       <input
         type="text"
         v-model="hours"
         @input="validateHours"
+        @blur="onBlur"
         maxlength="2"
       />
       <span>:</span>
@@ -11,9 +12,10 @@
         type="text"
         v-model="minutes"
         @input="validateMinutes"
+        @blur="onBlur"
         maxlength="2"
       />
-    </div>
+    </span>
   </template>
   
   <script>
@@ -52,6 +54,9 @@
 
         this.emitValue();
       },
+      onBlur() {
+        this.$emit("blur");
+      },
       emitValue() {
         this.$emit("input", `${this.hours.padStart(2, "0")}:${this.minutes.padStart(2, "0")}`);
       },
@@ -61,7 +66,7 @@
   
   <style scoped>
   .time-input input {
-    width: 2em;
+    width: 1.2rem;
     text-align: center;
   }
 

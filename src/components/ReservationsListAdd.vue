@@ -35,7 +35,7 @@ export default {
   },
   components: {
     MultiSelect,
-    ActionButtons
+    ActionButtons,
   },
   mounted() {
     const filtered = this.branches.filter(
@@ -54,14 +54,14 @@ export default {
     onClose() {
       this.$emit("close");
     },
-    addToItems(item){
+    addToItems(item) {
       this.remainingItems.push(item);
     },
     async onSave() {
       this.loading = true;
       // get new added branches (previously inactive)
-      const inactiveBranches = this.initialInctiveItems.filter(
-        (branch) => this.selectedItems.includes(branch)
+      const inactiveBranches = this.initialInctiveItems.filter((branch) =>
+        this.selectedItems.includes(branch)
       );
 
       // get newly removed branches (previously active)
@@ -72,15 +72,18 @@ export default {
       try {
         await Promise.allSettled([
           ...inactiveBranches.map((branch) =>
-            apiServices.updateAcceptReservation(branch.id, { 'accepts_reservations': true })
+            apiServices.updateBranch(branch.id, { accepts_reservations: true })
           ),
           ...activeBranches.map((branch) =>
-            apiServices.updateAcceptReservation(branch.id, { 'accepts_reservations': false })
+            apiServices.updateBranch(branch.id, { accepts_reservations: false })
           ),
         ]);
 
         this.$emit("update-table", this.selectedItems);
-        this.onClose();
+
+        setTimeout(() => {
+          this.onClose();
+        }, 200);
 
       } catch (error) {
         console.error("Error adding branches:", error);

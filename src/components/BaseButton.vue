@@ -1,6 +1,6 @@
 <template>
   <button
-    :class="['base-button', buttonColor, { 'base-button--disabled': disabled || loading }]"
+    :class="['base-button', buttonColor, { 'base-button--disabled': disabled }]"
     :style="{ cursor: loading || disabled ? 'not-allowed' : 'pointer' }"
     @click="handleClick"
     :disabled="disabled || loading"

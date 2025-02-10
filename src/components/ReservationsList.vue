@@ -27,7 +27,10 @@
       :onRowClick="onRowClick"
       :getTablesCount="getTablesCount"
     />
-    <BaseDialog v-model="editDialog" :title="`Edit ${selectedBranch?.name} (Branch reservations settings)`">
+    <BaseDialog
+      v-model="editDialog"
+      :title="`Edit ${selectedBranch?.name} (Branch reservations settings)`"
+    >
       <ReservationsListEdit
         v-model="selectedBranch"
         @close="editDialog = false"
@@ -62,7 +65,7 @@ export default {
     BaseButton,
     ReservationsListAdd,
     ReservationsListEdit,
-    ReservationsListTable
+    ReservationsListTable,
   },
   computed: {
     acceptReservationsBranches() {
@@ -84,18 +87,17 @@ export default {
       try {
         await Promise.allSettled(
           this.acceptReservationsBranches.map((branch) =>
-            apiServices.updateAcceptReservation(branch.id, { 'accepts_reservations': false })
+            apiServices.updateBranch(branch.id, { accepts_reservations: false })
           )
         );
 
-        this.branches = this.branches.map(branch => {
-          if(branch.accepts_reservations){
+        this.branches = this.branches.map((branch) => {
+          if (branch.accepts_reservations) {
             branch.accepts_reservations = false;
           }
 
           return branch;
         });
-
       } catch (error) {
         console.error("error disabling reservations:", error);
       } finally {
@@ -143,7 +145,6 @@ export default {
         id: branch.id,
         accepts_reservations: branch.accepts_reservations,
       }));
-
     } catch (error) {
       console.error(error);
     } finally {

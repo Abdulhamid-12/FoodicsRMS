@@ -2,7 +2,7 @@
   <div class="input-field">
     <h1 v-if="label" class="input-label">
       {{ label
-      }}<span v-if="required" style="color: red; font-weight: bold">*</span>
+      }}<span v-if="required" style="color: red; font-weight: 500">*</span>
     </h1>
     <input
       :type="type"
@@ -62,6 +62,6 @@ export default {
   width: 100%;
   padding: 5px;
   border: 1px solid #ccc;
-  border-radius: 3px;
+  border-radius: 5px;
 }
 </style>
