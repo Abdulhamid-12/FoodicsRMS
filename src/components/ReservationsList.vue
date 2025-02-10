@@ -4,7 +4,7 @@
       class="flex items-center justify-between py-4"
       style="background-color: var(--secondary-color)"
     >
-      <h1 class="mx-3 text-4xl"><b>Reservations</b></h1>
+      <h1 class="mx-3 text-4xl">Reservations</h1>
       <BaseButton
         class="my-2 mx-3"
         :color="'primary'"

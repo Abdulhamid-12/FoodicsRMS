@@ -173,6 +173,12 @@ export default {
       this.$emit("close");
     },
     onSave: async function () {
+
+      if(!this.reservationDuration) {
+        alert("Please select Reservation Duration");
+        return;
+      }
+      
       this.loading = true;
 
       // get new added tables (previously inactive)
