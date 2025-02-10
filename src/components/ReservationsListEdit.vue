@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span class="overflow-auto bg-gray-100">
     <section class="flex flex-col mx-3">
       <h1 class="py-2 px-1 my-4 bg-blue-100 border-t border-b border-blue-500">
         Branch working hours are {{ value.opening_from }} -
@@ -20,9 +20,25 @@
         item-value="id"
         @remove="addToItems"
       />
+      <div v-for="(day, key) in reservationTimes" :key="key" class="my-3">
+        {{ key.charAt(0).toUpperCase() + key.slice(1) }}
+        <div
+          class="flex justify-between items-center rounded-md p-2 bg-white"
+          style="border: 1px solid #ccc"
+        >
+          <div class="flex flex-wrap gap-2">
+            <span v-for="time in day" style="border: 1px solid var(--primary-color); border-radius: 7px; padding: 0.2rem;">
+              {{ time[0] }} - {{ time[1] }}
+            </span>
+          </div>
+          <BaseButton @click="addTimeSlot(key)">
+            <Icon icon="ic:baseline-more-time" width="25"></Icon>
+          </BaseButton>
+        </div>
+      </div>
       <CustomTimeInput v-model="timeInput" />
     </section>
-    <ActionButtons :loading="loading" @close="onClose" @save="onSave" />
+    <ActionButtons :loading="loading" @close="onClose" @save="onSave" class="bg-white"/>
   </span>
 </template>
 <script>
@@ -30,6 +46,8 @@ import ActionButtons from "@/components/ActionButtons.vue";
 import MultiSelect from "@/components/MultiSelect.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import CustomTimeInput from "@/components/CustomTimeInput.vue";
+import BaseButton from "@/components/BaseButton.vue";
+import { Icon } from "@iconify/vue2";
 import apiServices from "@/services/apiServices";
 
 export default {
@@ -37,6 +55,9 @@ export default {
     return {
       loading: false,
       reservationDuration: this.value.reservation_duration,
+      reservationTimes: JSON.parse(
+        JSON.stringify(this.value.reservation_times)
+      ),
       selectedTables: [],
       remainingTables: [],
       initialSelectedTables: [],
@@ -52,6 +73,8 @@ export default {
     MultiSelect,
     BaseInput,
     CustomTimeInput,
+    BaseButton,
+    Icon,
   },
   computed: {},
   methods: {
@@ -69,6 +92,11 @@ export default {
           return tables;
         })
         .flat();
+    },
+    addTimeSlot(day) {
+      if(this.reservationTimes[day].length < 3) {
+        this.reservationTimes[day].push(["00:00", "00:00"]);
+      }
     },
     addToItems(table) {
       this.remainingTables.push(table);

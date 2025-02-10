@@ -9,6 +9,14 @@
   opacity: 0;
 }
 
+.invert-on-hover {
+  transition: filter 0.2s;
+}
+
+.invert-on-hover:hover {
+  filter: invert(1);
+}
+
 /* .expand-enter-active, .expand-leave-active {
   transition: max-height 0.5s ease, opacity 0.5s ease;
 }

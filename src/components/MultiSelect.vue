@@ -1,7 +1,11 @@
 <template>
   <div>
     <h1 class="py-2">{{ label }}</h1>
-    <div class="select-field" @click="showDropdown = !showDropdown" :style="{ 'border-radius': showDropdown ? '5px 5px 0 0' : '5px'}">
+    <div
+      class="select-field"
+      @click="showDropdown = !showDropdown"
+      :style="{ 'border-radius': showDropdown ? '5px 5px 0 0' : '5px' }"
+    >
       <div class="selected-items">
         <template v-if="!value.length">No items selected</template>
         <span v-for="item in value" class="selected-item" :key="item.id">
@@ -9,7 +13,7 @@
             <h1>
               {{ getItemTitle(item) }}
             </h1>
-            <button @click.stop="removeItem(item)" class="close-icon">
+            <button @click.stop="removeItem(item)" class="invert-on-hover">
               <Icon
                 icon="lets-icons:close-round-duotone"
                 width="20"
@@ -25,7 +29,9 @@
     </div>
     <transition name="fade">
       <ul v-if="showDropdown" class="dropdown">
-        <template v-if="filteredItems.length === 0"><li style="padding: 3px 10px;">No data available</li></template>
+        <template v-if="filteredItems.length === 0"
+          ><li style="padding: 3px 10px">No data available</li></template
+        >
         <li v-for="item in filteredItems" @click="selectItem(item)">
           {{ getItemTitle(item) }}
         </li>
@@ -120,6 +126,7 @@ export default {
   border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
+  background-color: white;
 }
 
 .selected-items {
@@ -172,14 +179,6 @@ input {
 
 .dropdown li:hover {
   background-color: #f0f0f0;
-}
-
-.close-icon {
-  transition: filter 0.2s;
-}
-
-.close-icon:hover {
-  filter: invert(1);
 }
 
 </style>

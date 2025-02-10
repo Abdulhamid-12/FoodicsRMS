@@ -136,7 +136,6 @@ export default {
     try {
       this.loadingTable = true;
       const response = await apiServices.getBranches();
-
       this.branches = [...response.data];
 
       this.addBranchesItems = response.data.map((branch) => ({

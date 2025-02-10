@@ -7,6 +7,7 @@
         height: dialogHeight,
         minWidth: dialogMinWidth,
         minHeight: dialogMinHeight,
+        maxHeight: maxHeight
       }"
     >
       <section
@@ -57,6 +58,10 @@ export default {
       type: String,
       default: "auto",
     },
+    maxHeight: {
+      type: String,
+      default: "90vh",
+    }
   },
   computed: {
     dialogWidth() {
