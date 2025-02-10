@@ -13,37 +13,13 @@
         >Disable Reservations</BaseButton
       >
     </div>
-    <div class="w-full flex flex-col items-center my-20">
-      <span class="w-5/6"><ProgressLinear v-model="loadingTable" /></span>
-      <table class="w-5/6 bg-white rounded-lg mb-20 overflow-hidden shadow-lg">
-        <tr>
-          <BaseButton
-            @click="onAddBranches"
-            class="my-2 mx-3"
-            :color="'secondary'"
-            :disabled="loadingTable"
-            >Add Branches</BaseButton
-          >
-        </tr>
-        <tr>
-          <th>Branch</th>
-          <th>Reference</th>
-          <th>Number of Tables</th>
-          <th>Reservation Duration</th>
-        </tr>
-        <tr
-          v-for="branch in acceptReservationsBranches"
-          :key="branch.id"
-          class="clickable-row"
-          @click="onRowClick(branch)"
-        >
-          <td>{{ branch.name }}</td>
-          <td>{{ branch.reference }}</td>
-          <td>{{ getTablesCount(branch) }}</td>
-          <td>{{ branch.reservation_duration }}</td>
-        </tr>
-      </table>
-    </div>
+    <ReservationsListTable
+      :loadingTable="loadingTable"
+      :acceptReservationsBranches="acceptReservationsBranches"
+      :onAddBranches="onAddBranches"
+      :onRowClick="onRowClick"
+      :getTablesCount="getTablesCount"
+    />
     <BaseDialog v-model="dialog" title="Add Branches">
       <AddBranches
         :branches="addBranchesItems"
@@ -53,11 +29,12 @@
     </BaseDialog>
   </div>
 </template>
+
 <script>
 import BaseDialog from "@/components/BaseDialog.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import ProgressLinear from "@/components/ProgressLinear.vue";
-import AddBranches from "@/components/AddBranches.vue";
+import AddBranches from "@/components/ReservationsListAdd.vue";
+import ReservationsListTable from "@/components/ReservationsListTable.vue";
 import apiServices from "@/services/apiServices";
 
 export default {
@@ -73,8 +50,8 @@ export default {
   components: {
     BaseDialog,
     BaseButton,
-    ProgressLinear,
     AddBranches,
+    ReservationsListTable
   },
   computed: {
     acceptReservationsBranches() {
