@@ -1,25 +1,27 @@
 <template>
   <div class="w-full flex flex-col items-center my-20">
+    <div class="w-5/6">
+      <BaseButton
+        @click="onAddBranchesClick"
+        class="my-2"
+        color="primary"
+        :disabled="loadingTable"
+        :prepend-icon="'gridicons:add-outline'"
+        >Add Branches</BaseButton
+      >
+    </div>
     <span class="w-5/6"><ProgressLinear v-model="loadingTable" /></span>
     <table class="w-5/6 bg-white rounded-lg mb-20 overflow-hidden shadow-lg">
       <tr>
-        <BaseButton
-          @click="onAddBranchesClick"
-          class="my-2 mx-3"
-          color="primary"
-          :disabled="loadingTable"
-          :prepend-icon="'gridicons:add-outline'"
-          >Add Branches</BaseButton
-        >
-      </tr>
-      <tr>
         <th v-for="(header, index) in colDefs" :key="header.name">
-          {{ header.title }}
-          <BaseButton
-            @click="reorderRows(index)"
-            :icon="orderIcon[header.sortOrder]"
-          >
-          </BaseButton>
+          <div class="flex items-center font-semibold">
+            {{ header.title }}
+            <BaseButton
+              @click="reorderRows(index)"
+              :icon="orderIcon[header.sortOrder]"
+            >
+            </BaseButton>
+          </div>
         </th>
       </tr>
       <tr
@@ -161,11 +163,11 @@ tr:last-child {
   border-bottom: none;
 }
 
-tr:nth-child(even):not(:nth-child(2)) {
+tr:nth-child(odd):not(:nth-child(1)) {
   background-color: var(--secondary-color);
 }
 
-tr:nth-child(2) {
+tr:first-child {
   background-color: #dbcdff;
 }
 
@@ -175,6 +177,6 @@ tr:nth-child(2) {
 }
 
 .clickable-row:hover {
-  background-color: #e2e2e2;
+  background-color: #e2e2e2 !important;
 }
 </style>

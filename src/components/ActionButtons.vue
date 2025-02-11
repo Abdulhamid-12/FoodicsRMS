@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end">
+  <div class="flex justify-end rounded-b-lg">
     <BaseButton class="my-2" @click="onClose" :disabled="loading"
       >Close</BaseButton
     >

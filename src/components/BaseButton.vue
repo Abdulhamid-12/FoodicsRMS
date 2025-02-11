@@ -74,7 +74,7 @@ export default {
 
 <style scoped>
 .base-button {
-  @apply py-1 px-4 rounded border;
+  @apply py-1 px-4 rounded-lg border;
   transition: filter 0.3s;
 }
 

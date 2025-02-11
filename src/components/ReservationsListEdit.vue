@@ -1,6 +1,6 @@
 <template>
-  <span class="bg-gray-100">
-    <section class="flex flex-col px-3 overflow-auto" style="max-height: 70vh">
+  <span class="bg-gray-100 rounded-b-lg">
+    <section class="flex flex-col px-3 overflow-auto mb-1" style="max-height: 70vh">
       <h1 class="py-2 px-1 my-4 bg-blue-100 border-t border-b border-blue-500">
         Branch working hours are {{ value.opening_from }} -
         {{ value.opening_to }}
