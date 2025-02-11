@@ -24,6 +24,7 @@
           </div>
         </th>
       </tr>
+      <!-- <transition-group> -->
       <tr
         v-for="branch in sortedBranches"
         :key="branch.id"
@@ -35,6 +36,7 @@
         <td>{{ getTablesCount(branch) }}</td>
         <td>{{ branch.reservation_duration }}</td>
       </tr>
+      <!-- </transition-group> -->
     </table>
   </div>
 </template>
@@ -100,9 +102,8 @@ export default {
           a[header.name] = "";
         }
         // concatenate string to make the sort work for both string and number
-        return (a[header.name]+"").localeCompare(b[header.name]);
+        return (a[header.name] + "").localeCompare(b[header.name]);
       });
-
       if (header.sortOrder === "ascending") {
         return new_array;
       } else if (header.sortOrder === "descending") {

@@ -105,8 +105,8 @@ export default {
       reservationTimes: this.reorderDays(this.value.reservation_times),
       selectedTables: [],
       remainingTables: [],
-      initialSelectedTables: [],
-      initialRemainingTables: [],
+      // initialSelectedTables: [],
+      // initialRemainingTables: [],
       editMode: {
         sunday: [false, false, false],
         monday: [false, false, false],
@@ -175,6 +175,7 @@ export default {
       this.$emit("close");
     },
     validateReservationTimes() {
+      // TODO: add time slots conflict per day
       for (const day in this.reservationTimes) {
         for (const time of this.reservationTimes[day]) {
           const [hours, minutes] = time[0].split(':');
@@ -208,23 +209,24 @@ export default {
       this.loading = true;
 
       // get new added tables (previously inactive)
-      const activeTables = this.initialRemainingTables.filter((table) =>
-        this.selectedTables.includes(table)
-      );
+      // const activeTables = this.initialRemainingTables.filter((table) =>
+      //   this.selectedTables.find((item) => item.id === table.id)
+      // );
+
+      // console.log({activeTables});
+      // console.log(activeTables)
 
       // get newly removed tables (previously active)
-      const inactiveTables = this.initialSelectedTables.filter(
-        (table) => !this.selectedTables.includes(table)
-      );
+      // const inactiveTables = this.initialSelectedTables.filter(
+      //   (table) => !this.selectedTables.includes(table)
+      // );
 
       const sections = this.value.sections.map((section) => {
         const updatedTables = section.tables.map((table) => {
-          if (activeTables.find((t) => t.id === table.id)) {
+          if (this.selectedTables.find((t) => t.id === table.id)) {
             return { ...table, accepts_reservations: true };
-          } else if (inactiveTables.find((t) => t.id === table.id)) {
-            return { ...table, accepts_reservations: false };
-          }
-          return table;
+          } 
+          return { ...table, accepts_reservations: false };
         });
         return { ...section, tables: updatedTables };
       });
@@ -234,6 +236,7 @@ export default {
         reservation_times: this.reservationTimes,
         sections: sections,
       };
+
 
       try {
         await apiServices.updateBranch(this.value.id, raw);
@@ -305,7 +308,7 @@ export default {
     );
     if (filtered.length > 0) {
       this.selectedTables = [...filtered];
-      this.initialSelectedTables = [...filtered];
+      // this.initialSelectedTables = [...filtered];
     }
 
     const other = this.tables.filter(
@@ -313,7 +316,7 @@ export default {
     );
     if (other.length > 0) {
       this.remainingTables = [...other];
-      this.initialRemainingTables = [...other];
+      // this.initialRemainingTables = [...other];
     }
   },
 };

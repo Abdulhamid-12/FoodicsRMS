@@ -82,6 +82,7 @@ export default {
         accepts_reservations: branch.accepts_reservations,
       }));
 
+
       // this.remainingItems = [...other];
       // this.initialInactiveItems = [...other];
     },
@@ -95,16 +96,16 @@ export default {
       this.loading = true;
       // get new added branches (previously inactive)
       const inactiveBranches = this.initialInactiveItems.filter((branch) =>
-        this.selectedItems.includes(branch)
+        this.selectedItems.find((item) => item.id === branch.id)
       );
 
       // get newly removed branches (previously active)
       const activeBranches = this.initialActiveItems.filter(
-        (branch) => !this.selectedItems.includes(branch)
+        (branch) => !this.selectedItems.find((item) => item.id === branch.id)
       );
 
       try {
-        await Promise.allSettled([
+        const response = await Promise.allSettled([
           ...inactiveBranches.map((branch) =>
             apiServices.updateBranch(branch.id, { accepts_reservations: true })
           ),
