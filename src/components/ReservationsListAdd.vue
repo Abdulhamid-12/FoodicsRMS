@@ -91,7 +91,7 @@ export default {
 
       } catch (error) {
         console.error("Error adding branches:", error);
-        this.snackbar.error("Error adding branches");
+        this.snackbar.error(`Error adding branches: ${error.response.data.message}`);
       } finally {
         this.loading = false;
       }

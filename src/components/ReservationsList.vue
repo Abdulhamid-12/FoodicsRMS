@@ -34,7 +34,7 @@
       <ReservationsListEdit
         v-model="selectedBranch"
         @close="editDialog = false"
-        @update-table=""
+        @save-settings="onSaveSettings"
       />
     </BaseDialog>
   </div>
@@ -104,7 +104,7 @@ export default {
         this.snackbar.success("Reservations disabled");
       } catch (error) {
         console.error("error disabling reservations:", error);
-        this.snackbar.error("Error disabling reservations");
+        this.snackbar.error(`Error disabling reservations: ${error.response.data.message}`);
       } finally {
         this.loadingTable = false;
         this.loadingDisableBtn = false;
@@ -138,6 +138,17 @@ export default {
         accepts_reservations: branch.accepts_reservations,
       }));
     },
+    onSaveSettings(editedBranch) {
+      // Update the table
+      this.branches = this.branches.map((b) => {
+        if (b.id === editedBranch.id) {
+          b.reservation_duration = editedBranch.reservation_duration;
+          b.reservation_times = editedBranch.reservation_times;
+          b.sections = editedBranch.sections;
+        }
+        return b;
+      });
+    },
   },
   mounted: async function () {
     try {
@@ -153,7 +164,7 @@ export default {
       this.snackbar.success("Branches loaded");
     } catch (error){
       console.error(error);
-      this.snackbar.error("Error loading branches");
+      this.snackbar.error(`Error loading branches: ${error.response.data.message}`);
     } finally {
       this.loadingTable = false;
     }

@@ -33,11 +33,11 @@
           class="flex justify-between items-center rounded-md p-2 bg-white"
           style="border: 1px solid #ccc"
         >
-          <div class="flex flex-wrap gap-2">
+          <div class="flex gap-3">
             <span
               v-for="(time, index) in dayTimes"
               :key="index"
-              style="border-radius: 7px; padding: 0.2rem"
+              class="flex items-center justify-between gap-2 p-1 rounded-md"
               :style="{
                 border: editMode[key][index]
                   ? '2px solid blue'
@@ -101,7 +101,7 @@ export default {
   data() {
     return {
       loading: false,
-      reservationDuration: this.value.reservation_duration?? 0,
+      reservationDuration: this.value.reservation_duration ?? 0,
       reservationTimes: this.reorderDays(this.value.reservation_times),
       selectedTables: [],
       remainingTables: [],
@@ -174,10 +174,34 @@ export default {
     onClose() {
       this.$emit("close");
     },
-    onSave: async function () {
+    validateReservationTimes() {
+      for (const day in this.reservationTimes) {
+        for (const time of this.reservationTimes[day]) {
+          const [hours, minutes] = time[0].split(':');
+          const startTime = hours * 60 + minutes;
+          const [hours2, minutes2] = time[1].split(':');
+          const endTime = hours2 * 60 + minutes2;
+          const timeSlot = endTime - startTime;
 
-      if(!this.reservationDuration) {
-        alert("Please select Reservation Duration");
+          if (timeSlot < this.reservationDuration) {
+            this.snackbar.warning(
+              `${day}: Time slot must be longer than reservation duration`
+            );
+            return false;
+          }
+        }
+      }
+
+      return true;
+    },
+    onSave: async function () {
+      if (!this.reservationDuration) {
+        this.snackbar.warning("Please select Reservation Duration");
+        return;
+      }
+
+      // Time slot must be longer than reservation duration.
+      if (!this.validateReservationTimes()) {
         return;
       }
 
@@ -193,38 +217,59 @@ export default {
         (table) => !this.selectedTables.includes(table)
       );
 
-      // sections: [
-      //   {
-      //     tables: [
-      //       ...inactiveTables.map((table) => ({'id': table.id, 'accepts_reservations': false})),
-      //       ...activeTables.map((table) => ({'id': table.id, 'accepts_reservations': true})),
-      //     ],
-      //   },
-      // ],
+      const sections = this.value.sections.map((section) => {
+        const updatedTables = section.tables.map((table) => {
+          if (activeTables.find((t) => t.id === table.id)) {
+            return { ...table, accepts_reservations: true };
+          } else if (inactiveTables.find((t) => t.id === table.id)) {
+            return { ...table, accepts_reservations: false };
+          }
+          return table;
+        });
+        return { ...section, tables: updatedTables };
+      });
 
       const raw = {
         reservation_duration: this.reservationDuration,
-        // reservation_times: this.reservationTimes, causes Unprocessable Entity error
+        reservation_times: this.reservationTimes,
+        sections: sections,
       };
 
       try {
         await apiServices.updateBranch(this.value.id, raw);
-        this.$emit("save");
+        this.$emit("save-settings", {
+          id: this.value.id,
+          reservation_duration: this.reservationDuration,
+          reservation_times: this.reservationTimes,
+          sections: sections,
+        });
 
         setTimeout(() => {
           this.onClose();
         }, 200);
 
         this.snackbar.success("Branch settings are updated");
-
       } catch (error) {
         console.error("Error editing a branch:", error);
-        this.snackbar.error("Error editing a branch");
+        this.snackbar.error(
+          `Error editing a branch: ${error.response.data.message}`
+        );
       } finally {
         this.loading = false;
       }
     },
     reorderDays(reservationTimes) {
+      if (!reservationTimes) {
+        return {
+          saturday: [],
+          sunday: [],
+          monday: [],
+          tuesday: [],
+          wednesday: [],
+          thursday: [],
+          friday: [],
+        };
+      }
       const orderedDays = [
         "saturday",
         "sunday",
@@ -238,17 +283,18 @@ export default {
       orderedDays.forEach((day) => {
         if (reservationTimes[day]) {
           reordered[day] = reservationTimes[day];
-        }
-        else {
+        } else {
           reordered[day] = [];
         }
       });
       return reordered;
     },
     applyOnAllDays() {
-      const satTimes = JSON.parse(JSON.stringify(this.reservationTimes.saturday));
+      const saturdayTimes = JSON.parse(
+        JSON.stringify(this.reservationTimes.saturday)
+      );
       Object.keys(this.reservationTimes).forEach((day) => {
-        this.reservationTimes[day] = JSON.parse(JSON.stringify(satTimes));
+        this.reservationTimes[day] = JSON.parse(JSON.stringify(saturdayTimes));
       });
     },
   },
@@ -257,7 +303,7 @@ export default {
     const filtered = this.tables.filter(
       (table) => table.accepts_reservations === true
     );
-    if(filtered.length > 0) {
+    if (filtered.length > 0) {
       this.selectedTables = [...filtered];
       this.initialSelectedTables = [...filtered];
     }
@@ -265,10 +311,10 @@ export default {
     const other = this.tables.filter(
       (table) => table.accepts_reservations === false
     );
-    if(other.length > 0) {
-      this.remainingTables = [...other]
+    if (other.length > 0) {
+      this.remainingTables = [...other];
       this.initialRemainingTables = [...other];
-    };
+    }
   },
 };
 </script>
