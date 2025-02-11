@@ -7,7 +7,7 @@
       <h1 class="mx-3 text-4xl">Reservations</h1>
       <BaseButton
         class="my-2 mx-3"
-        :color="'primary'"
+        color="error"
         @click="onDisableReservations"
         :loading="loadingDisableBtn"
         >Disable Reservations</BaseButton
@@ -25,7 +25,6 @@
       :acceptReservationsBranches="acceptReservationsBranches"
       :onAddBranchesClick="onAddBranchesClick"
       :onRowClick="onRowClick"
-      :getTablesCount="getTablesCount"
     />
     <BaseDialog
       v-model="editDialog"
@@ -104,7 +103,9 @@ export default {
         this.snackbar.success("Reservations disabled");
       } catch (error) {
         console.error("error disabling reservations:", error);
-        this.snackbar.error(`Error disabling reservations: ${error.response.data.message}`);
+        this.snackbar.error(
+          `Error disabling reservations: ${error.response.data.message}`
+        );
       } finally {
         this.loadingTable = false;
         this.loadingDisableBtn = false;
@@ -113,12 +114,7 @@ export default {
     onAddBranchesClick: async function () {
       this.addDialog = true;
     },
-    getTablesCount(branch) {
-      return branch.sections.reduce(
-        (total, sec) => total + sec.tables.length,
-        0
-      );
-    },
+
     onRowClick(branch) {
       console.log("Row clicked:", branch);
       this.selectedBranch = branch;
@@ -162,9 +158,11 @@ export default {
         accepts_reservations: branch.accepts_reservations,
       }));
       this.snackbar.success("Branches loaded");
-    } catch (error){
+    } catch (error) {
       console.error(error);
-      this.snackbar.error(`Error loading branches: ${error.response.data.message}`);
+      this.snackbar.error(
+        `Error loading branches: ${error.response.data.message}`
+      );
     } finally {
       this.loadingTable = false;
     }

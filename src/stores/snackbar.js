@@ -9,7 +9,7 @@ const snackbar = Vue.observable({
 
 export const useSnackbar = () => {
 
-    const show = (message, color, time = 5000) => {
+    const show = (message, color, time = 3000) => {
         snackbar.open = true;
         snackbar.message = message;
         snackbar.color = color;

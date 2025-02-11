@@ -11,7 +11,7 @@
 
 <script>
 import { Icon } from "@iconify/vue2";
-import { useSnackbar } from '@/composables/snackbar';
+import { useSnackbar } from '@/stores/snackbar';
 
 export default {
   name: "SnackBar",

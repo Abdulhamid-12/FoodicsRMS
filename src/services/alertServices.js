@@ -1,29 +1,33 @@
-import { useSnackbar } from "@/composables/snackbar";
+import { useSnackbar } from "@/stores/snackbar";
 
 class AlertService {
-    constructor() {
-        this.snackbar = useSnackbar();
-    }
+  constructor() {
+    this.snackbar = useSnackbar();
+  }
 
-    success(message){
-        this.snackbar.show(message, 'var(--success-color)');
-    }
+  success(message) {
+    this.snackbar.show(message, "var(--success-color)");
+  }
 
-    warning(message){
-        this.snackbar.show(message, 'var(--warning-color)');
-    }
+  warning(message) {
+    this.snackbar.show(message, "var(--warning-color)");
+  }
 
-    info(message){
-        this.snackbar.show(message, 'var(--info-color)');
-    }
+  info(message) {
+    this.snackbar.show(message, "var(--info-color)");
+  }
 
-    error(message) {
-        this.snackbar.show(message, 'var(--error-color)'); 
-    }
+  error(message) {
+    this.snackbar.show(message, "var(--error-color)");
+  }
 
-    clear(){
-        this.snackbar.snackbar.open = false;
-    }
+  custom(message, color, time) {
+    this.snackbar.show(message, color, time);
+  }
+
+  clear() {
+    this.snackbar.snackbar.open = false;
+  }
 }
 
 export const alertService = new AlertService();

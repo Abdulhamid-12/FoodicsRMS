@@ -1,15 +1,18 @@
 <template>
   <button
-    :class="['base-button', buttonColor, { 'base-button--disabled': disabled }]"
+    :class="['base-button', getBtnClass(), { 'base-button--disabled': disabled }]"
     :style="{ cursor: loading || disabled ? 'not-allowed' : 'pointer' }"
     @click="handleClick"
     :disabled="disabled || loading"
   >
-    <template v-if="!loading">
+    <template v-if="!loading && !icon">
       <div class="flex items-center">
         <Icon v-if="prependIcon" :icon="prependIcon" width="20" style="display: inline; margin-right: 5px"/>
         <slot></slot>
       </div>
+    </template>
+    <template v-else-if="icon">
+      <Icon :icon="icon"/>
     </template>
     <template v-else>
       <Icon icon="line-md:loading-loop" width="25" />
@@ -38,6 +41,10 @@ export default {
     prependIcon: {
       type: String,
       default: "",
+    },
+    icon: {
+      type: String,
+      default: "",
     }
   },
   components: {
@@ -53,6 +60,13 @@ export default {
       if (!this.loading && !this.disabled) {
         this.$emit('click', event);
       }
+    },
+    getBtnClass() {
+      if(this.icon){
+        return "base-button--icon";
+      } else {
+        return `base-button--${this.color}`;
+      }
     }
   }
 };
@@ -62,6 +76,12 @@ export default {
 .base-button {
   @apply py-1 px-4 rounded border;
   transition: filter 0.3s;
+}
+
+.base-button--icon {
+  @apply p-2 rounded-full;
+  transition: filter 0.3s;
+  border: none;
 }
 
 .base-button--default {
@@ -75,7 +95,13 @@ export default {
 }
 
 .base-button--secondary {
-  background-color: gray;
+  background-color: rgb(179, 177, 255);
+  border-color: black;
+  color: rgb(0, 0, 0);
+}
+
+.base-button--error {
+  background-color: rgb(175, 0, 0);
   color: white;
 }
 

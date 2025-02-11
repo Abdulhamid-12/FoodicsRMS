@@ -6,20 +6,24 @@
         <BaseButton
           @click="onAddBranchesClick"
           class="my-2 mx-3"
-          :color="'secondary'"
+          color="primary"
           :disabled="loadingTable"
           :prepend-icon="'gridicons:add-outline'"
           >Add Branches</BaseButton
         >
       </tr>
       <tr>
-        <th>Branch</th>
-        <th>Reference</th>
-        <th>Number of Tables</th>
-        <th>Reservation Duration</th>
+        <th v-for="(header, index) in colDefs" :key="header.name">
+          {{ header.title }}
+          <BaseButton
+            @click="reorderRows(index)"
+            :icon="orderIcon[header.sortOrder]"
+          >
+          </BaseButton>
+        </th>
       </tr>
       <tr
-        v-for="branch in acceptReservationsBranches"
+        v-for="branch in sortedBranches"
         :key="branch.id"
         class="clickable-row"
         @click="onRowClick(branch)"
@@ -36,6 +40,7 @@
 <script>
 import BaseButton from "@/components/BaseButton.vue";
 import ProgressLinear from "@/components/ProgressLinear.vue";
+import { Icon } from "@iconify/vue2";
 
 export default {
   props: {
@@ -43,12 +48,95 @@ export default {
     acceptReservationsBranches: Array,
     onAddBranchesClick: Function,
     onRowClick: Function,
-    getTablesCount: Function
+  },
+  data() {
+    return {
+      colDefs: [
+        {
+          name: "name",
+          title: "Branch",
+          sortOrder: "normal",
+        },
+        {
+          name: "reference",
+          title: "Reference",
+          sortOrder: "normal",
+        },
+        {
+          name: "tables",
+          title: "Number of Tables",
+          sortOrder: "normal",
+        },
+        {
+          name: "reservation_duration",
+          title: "Reservation Duration",
+          sortOrder: "normal",
+        },
+      ],
+      orderIcon: {
+        normal: "famicons:filter",
+        ascending: "ic:baseline-arrow-upward",
+        descending: "ic:baseline-arrow-downward",
+      },
+      currentSortHeader: null,
+    };
+  },
+  computed: {
+    sortedBranches() {
+      if (!this.currentSortHeader) {
+        return this.acceptReservationsBranches;
+      }
+
+      const header = this.currentSortHeader;
+      let new_array = this.acceptReservationsBranches.map((branch) => ({
+        ...branch,
+        tables: this.getTablesCount(branch),
+      }));
+
+      new_array.sort((a, b) => {
+        if (a[header.name] === null) {
+          a[header.name] = "";
+        }
+        // concatenate string to make the sort work for both string and number
+        return (a[header.name]+"").localeCompare(b[header.name]);
+      });
+
+      if (header.sortOrder === "ascending") {
+        return new_array;
+      } else if (header.sortOrder === "descending") {
+        return new_array.reverse();
+      } else {
+        return this.acceptReservationsBranches;
+      }
+    },
+  },
+  methods: {
+    reorderRows(headerIndex) {
+      // track the current header
+      this.currentSortHeader = this.colDefs[headerIndex];
+
+      const headerOrders = ["normal", "ascending", "descending"];
+
+      // go through the sorting cycle
+      let nextOrder =
+        headerOrders.indexOf(this.colDefs[headerIndex].sortOrder) + 1;
+      if (nextOrder === headerOrders.length) {
+        nextOrder = 0;
+      }
+      this.colDefs[headerIndex].sortOrder = headerOrders[nextOrder];
+    },
+    getTablesCount(branch) {
+      return branch.sections.reduce(
+        (total, sec) => total + sec.tables.length,
+        0
+      );
+    },
   },
   components: {
     BaseButton,
-    ProgressLinear
-  }
+    ProgressLinear,
+    Icon,
+  },
 };
 </script>
 
@@ -67,14 +155,18 @@ th {
 }
 
 tr {
-  border-bottom: 1px solid #74737394;
+  border-bottom: 1px solid #a0a0a094;
 }
 tr:last-child {
   border-bottom: none;
 }
 
-tr:nth-child(even) {
+tr:nth-child(even):not(:nth-child(2)) {
   background-color: var(--secondary-color);
+}
+
+tr:nth-child(2) {
+  background-color: #dbcdff;
 }
 
 .clickable-row {
