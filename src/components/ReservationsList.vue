@@ -15,7 +15,7 @@
     </div>
     <BaseDialog v-model="addDialog" title="Add Branches">
       <ReservationsListAdd
-        :branches="addBranchesItems"
+        :branches="branches"
         @close="addDialog = false"
         @update-table="onSaveAddBranches"
       />
@@ -127,12 +127,6 @@ export default {
         branch.accepts_reservations = !!activeBranch;
         return branch;
       });
-
-      this.addBranchesItems = this.branches.map((branch) => ({
-        name: `${branch.name} (${branch.reference})`,
-        id: branch.id,
-        accepts_reservations: branch.accepts_reservations,
-      }));
     },
     onSaveSettings(editedBranch) {
       // Update the table
@@ -152,11 +146,6 @@ export default {
       const response = await apiServices.getBranches();
       this.branches = [...response.data];
 
-      this.addBranchesItems = response.data.map((branch) => ({
-        name: `${branch.name} (${branch.reference})`,
-        id: branch.id,
-        accepts_reservations: branch.accepts_reservations,
-      }));
       this.snackbar.success("Branches loaded");
     } catch (error) {
       console.error(error);

@@ -40,19 +40,51 @@ export default {
     ActionButtons,
   },
   mounted() {
-    const filtered = this.branches.filter(
-      (branch) => branch.accepts_reservations === true
-    );
-    this.selectedItems = [...filtered];
-    this.initialActiveItems = [...filtered];
-
-    const other = this.branches.filter(
-      (branch) => branch.accepts_reservations === false
-    );
-    this.remainingItems = [...other];
-    this.initialInactiveItems = [...other];
+    this.refreshData();
+  },
+  watch: {
+    branches() {
+      this.refreshData();
+    },
   },
   methods: {
+    refreshData() {
+      const filtered = this.branches.filter(
+        (branch) => branch.accepts_reservations === true
+      );
+      this.selectedItems = filtered.map((branch) => ({
+        name: `${branch.name} (${branch.reference})`,
+        id: branch.id,
+        accepts_reservations: branch.accepts_reservations,
+      }));
+
+      this.initialActiveItems = filtered.map((branch) => ({
+        name: `${branch.name} (${branch.reference})`,
+        id: branch.id,
+        accepts_reservations: branch.accepts_reservations,
+      }));
+
+      // this.selectedItems = [...filtered];
+      // this.initialActiveItems = [...filtered];
+
+      const other = this.branches.filter(
+        (branch) => branch.accepts_reservations === false
+      );
+
+      this.remainingItems = other.map((branch) => ({
+        name: `${branch.name} (${branch.reference})`,
+        id: branch.id,
+        accepts_reservations: branch.accepts_reservations,
+      }));
+      this.initialInactiveItems = other.map((branch) => ({
+        name: `${branch.name} (${branch.reference})`,
+        id: branch.id,
+        accepts_reservations: branch.accepts_reservations,
+      }));
+
+      // this.remainingItems = [...other];
+      // this.initialInactiveItems = [...other];
+    },
     onClose() {
       this.$emit("close");
     },
@@ -88,10 +120,11 @@ export default {
         }, 200);
 
         this.snackbar.success("Branches updated");
-
       } catch (error) {
         console.error("Error adding branches:", error);
-        this.snackbar.error(`Error adding branches: ${error.response.data.message}`);
+        this.snackbar.error(
+          `Error adding branches: ${error.response.data.message}`
+        );
       } finally {
         this.loading = false;
       }
